@@ -1,0 +1,13 @@
+# networkd Configuration Parser Makefile
+# $Id: Makefile.parser 2 2007-11-02 15:31:40Z oxff $
+
+all: ConfigParser.yacc.cpp ConfigParser.lex.cpp
+
+ConfigParser.yacc.cpp: ConfigParser.y
+	yacc -pnetworkd_cfg_yy -d -o$@ $^
+
+ConfigParser.lex.cpp: ConfigParser.l
+	lex -Pnetworkd_cfg_yy -o$@ $^
+
+clean:
+	rm -f ConfigParser.{yacc,lex}.cpp
