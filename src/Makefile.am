@@ -37,7 +37,7 @@ libnetworkd_la_SOURCES += ProxiedTcpSocket.cpp
 libnetworkd_la_SOURCES += UdnsResolvingFacility.cpp
 libnetworkd_la_SOURCES += UdpSocket.cpp
 libnetworkd_la_SOURCES += UnixSocket.cpp
-libnetworkd_la_LDFLAGS = -version-info 1:0:0 --no-undefined --no-allow-shlib-undefined -ldl
+libnetworkd_la_LDFLAGS = -version-info 1:0:1 --no-undefined --no-allow-shlib-undefined -ldl
 
 noinst_HEADERS  = ConfigParser.yacc.hpp
 

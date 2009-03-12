@@ -32,6 +32,8 @@ UdnsResolvingFacility::UdnsResolvingFacility(IOManager * mgr,
 	TimeoutManager * tomgr)
 {
 	m_context = NULL;
+
+	dns_reset(m_context);
 		
 	if(dns_init(m_context, 1) < 0)
 		throw;
@@ -110,7 +112,7 @@ void UdnsResolvingFacility::resolveName(string name, NameResolver * resolver)
 		
 		resolver->nameResolved(name, list<string>(), NRS_FAILED);
 	}
-	
+
 	int nextTimeout = dns_timeouts(m_context, -1, 0);
 	
 	if(nextTimeout >= 0)
@@ -142,6 +144,8 @@ void UdnsResolvingFacility::timeoutFired(Timeout timeout)
 void UdnsResolvingFacility::processResult(struct dns_rr_a4 * result,
 	ResolutionEntry * entry)
 {
+	m_pendingResolutions.erase(entry);
+
 	if(!result || !result->dnsa4_qname || result->dnsa4_nrr <= 0)
 	{
 		entry->resolver->nameResolved(entry->domain,
@@ -157,7 +161,6 @@ void UdnsResolvingFacility::processResult(struct dns_rr_a4 * result,
 		entry->resolver->nameResolved(entry->domain, addresses, NRS_OK);
 	}
 
-	m_pendingResolutions.erase(entry);	
 	delete entry;
 }
 
