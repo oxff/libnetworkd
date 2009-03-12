@@ -4,7 +4,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-AM_CPPFLAGS = -I../include/ -Werror
+AM_CPPFLAGS = -I../include/ -Werror -Wno-deprecated
 
 
 library_includedir = $(includedir)/libnetworkd/

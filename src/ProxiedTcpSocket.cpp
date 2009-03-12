@@ -239,7 +239,6 @@ void ProxiedTcpSocket::dataRead(const char * buffer, uint32_t dataLength)
 				struct socks5_userauthResponse *uaR;
 				uaR = (struct socks5_userauthResponse*)buffer;
 				if(uaR->version != 1) {
-					printf("socks5 version error in socks5_userauthResponse (%d != canonical 1)\n", uaR->version);
 					close(true);
 					return;
 				}
@@ -252,7 +251,6 @@ void ProxiedTcpSocket::dataRead(const char * buffer, uint32_t dataLength)
 				}
 			} else {
 				if(m_bufferLength > sizeof(struct socks5_userauthResponse)) {
-					printf("bad response size in socks5_userauthResponse (%d != canonical %d)\n", m_bufferLength, sizeof(struct socks5_userauthResponse));
 					close(true);
 					return;
 				}
@@ -271,7 +269,6 @@ void ProxiedTcpSocket::dataRead(const char * buffer, uint32_t dataLength)
 				rqR = (struct socks5_rqResponse*)m_buffer;
 
 				if(rqR->version != 5) {
-					printf("socks5 version error in socks5_rqResponse (%d != canonical 5)\n", rqR->version);
 					close(true);
 					return;
 				}

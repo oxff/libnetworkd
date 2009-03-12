@@ -12,6 +12,7 @@
 #include <libnetworkd/IO.hpp>
 #include <libnetworkd/LogManager.hpp>
 
+#include <stdlib.h>
 #include <sys/poll.h>
 
 

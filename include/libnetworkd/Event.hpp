@@ -19,6 +19,9 @@
 #include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
+#include <strings.h>
+#include <string.h>
+#include <stdlib.h>
 using namespace std;
 
 #include "LogManager.hpp"
@@ -261,7 +264,7 @@ public:
 		
 		gettimeofday((struct timeval *) m_uid, 0);
 		// unfortunately the faster m_uid[0] only works on big endian systems
-		((struct timeval *) m_uid)->tv_sec = ((struct timeval *) m_uid)->tv_sec & 0x00ffffff | (rand() & 0xff) << 24;
+		((struct timeval *) m_uid)->tv_sec = (((struct timeval *) m_uid)->tv_sec & 0x00ffffff) | ((rand() & 0xff) << 24);
 	}
 	
 	inline Event(string eventName)
@@ -270,7 +273,7 @@ public:
 		m_eventName = eventName;
 		
 		gettimeofday((struct timeval *) m_uid, 0);
-		((struct timeval *) m_uid)->tv_sec = ((struct timeval *) m_uid)->tv_sec & 0x00ffffff | (rand() & 0xff) << 24;
+		((struct timeval *) m_uid)->tv_sec = (((struct timeval *) m_uid)->tv_sec & 0x00ffffff) | ((rand() & 0xff) << 24);
 	}
 	
 	

@@ -12,6 +12,7 @@
 #ifndef __INCLUDE_libnetworkd_IO_hpp
 #define __INCLUDE_libnetworkd_IO_hpp
 
+#include <stdint.h>
 
 #include <list>
 using namespace std;
