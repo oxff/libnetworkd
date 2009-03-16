@@ -4,7 +4,7 @@
 	| | | |_) | | | |  __/ |_ \ V  V / (_) | |  |   < (_| |
 	|_|_|_.__/|_| |_|\___|\__| \_/\_/ \___/|_|  |_|\_\__,_|
                                                           
-		version 1.0.0
+		version 1.0.1
 	
 
 libnetworkd is the skeleton library for a configurable, modular, event driven,
@@ -12,4 +12,4 @@ single-threaded and logging capable network daemon conforming to the POSIX
 standard and using autotools.
 
 This code is published under the terms of the GNU Public License, see the file
-LICENSE for details. It is (c) 2007 by Georg Wicherski, <gw@mwcollect.org>.
+LICENSE for details. It is (c) 2007-2009 by Georg Wicherski, <gw@mwcollect.org>.
