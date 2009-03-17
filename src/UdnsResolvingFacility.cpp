@@ -161,6 +161,7 @@ void UdnsResolvingFacility::processResult(struct dns_rr_a4 * result,
 		entry->resolver->nameResolved(entry->domain, addresses, NRS_OK);
 	}
 
+	free(result);
 	delete entry;
 }
 
