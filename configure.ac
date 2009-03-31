@@ -3,12 +3,12 @@
 # (c) 2007 by Georg 'oxff' Wicherski, <georg-wicherski@pixel-house.net>
 
 AC_PREREQ(2.59)
-AC_INIT([libnetworkd], [1.0.1], [georg-wicherski@pixel-house.net])
-AM_INIT_AUTOMAKE([libnetworkd], [1.0.1])
+AC_INIT([libnetworkd], [1.0.2], [georg-wicherski@pixel-house.net])
+AM_INIT_AUTOMAKE([libnetworkd], [1.0.2])
 
 AC_REVISION([$Id: configure.ac 42 2008-04-01 14:11:08Z oxff $])
 
-VERSION="1.0.1"
+VERSION="1.0.2"
 AC_SUBST(VERSION)
 
 
