@@ -162,7 +162,6 @@ bool TcpSocket::connect(struct sockaddr_in * remoteHost)
 		return true;
 	}
 
-	perror(__PRETTY_FUNCTION__);
 	return false;
 }
 
@@ -217,6 +216,7 @@ bool TcpSocket::close(bool force)
 			m_clientEndpoint->connectionClosed();
 	}
 
+	delete this;
 	return true;
 }
 
