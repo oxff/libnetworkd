@@ -19,9 +19,9 @@ void networkd_cfg_yyerror(const char * errorMessage)
 int networkd_cfg_yylex();
 
 
-ConfigurationNode * g_networkd_cfg_yyrootSection;
-ConfigurationNode * g_networkd_cfg_yycurrentSection;
-ConfigurationNode * g_networkd_cfg_yycurrentValue;
+Configuration::ConfigurationNode * g_networkd_cfg_yyrootSection;
+Configuration::ConfigurationNode * g_networkd_cfg_yycurrentSection;
+Configuration::ConfigurationNode * g_networkd_cfg_yycurrentValue;
 
 
 extern string g_networkd_cfg_yystringBuffer;
@@ -49,7 +49,7 @@ body		:
 		
 bodyopening	: CFGT_SECTION_OPEN
 		{
-			g_networkd_cfg_yyrootSection = new ConfigurationNode;
+			g_networkd_cfg_yyrootSection = new Configuration::ConfigurationNode;
 			g_networkd_cfg_yycurrentSection = g_networkd_cfg_yyrootSection;
 			
 			g_networkd_cfg_yyrootSection->nodeType = CFGNT_SECTION;
@@ -65,9 +65,9 @@ section		: sectionname CFGT_SECTION_OPEN sectioncontent CFGT_SECTION_CLOSE
 		
 sectionname	: CFGT_VALUE_NAME
 		{
-			ConfigurationNode * backlink = g_networkd_cfg_yycurrentSection;
+			Configuration::ConfigurationNode * backlink = g_networkd_cfg_yycurrentSection;
 			
-			g_networkd_cfg_yycurrentSection = new ConfigurationNode;
+			g_networkd_cfg_yycurrentSection = new Configuration::ConfigurationNode;
 			g_networkd_cfg_yycurrentSection->nodeType = CFGNT_SECTION;
 			g_networkd_cfg_yycurrentSection->nodeName = g_networkd_cfg_yystringBuffer;
 			g_networkd_cfg_yycurrentSection->backlink = backlink;
@@ -85,7 +85,7 @@ assignment	: assignname CFGT_VALUE_ASSIGN assignval CFGT_SEMICOLON
 
 assignname	: CFGT_VALUE_NAME
 		{
-			g_networkd_cfg_yycurrentValue = new ConfigurationNode;
+			g_networkd_cfg_yycurrentValue = new Configuration::ConfigurationNode;
 			
 			g_networkd_cfg_yycurrentValue->nodeName = g_networkd_cfg_yystringBuffer;
 			g_networkd_cfg_yycurrentValue->nodeType = CFGNT_VALUE;

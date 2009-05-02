@@ -33,7 +33,7 @@ void Configuration::freeNodeAndChildren(ConfigurationNode * node)
 {
 	if(node->nodeType == CFGNT_SECTION)
 	{
-		for(list<ConfigurationNode *>::iterator i = node->data.children.begin(); i != node->data.children.end(); ++i)
+		for(vector<ConfigurationNode *>::iterator i = node->data.children.begin(); i != node->data.children.end(); ++i)
 			freeNodeAndChildren(* i);
 			
 		node->data.children.clear();
@@ -46,7 +46,7 @@ void Configuration::freeNodeAndChildren(ConfigurationNode * node)
 	delete node;
 }
 
-ConfigurationNode * Configuration::traversePath(const char * nodePath)
+Configuration::ConfigurationNode * Configuration::traversePath(const char * nodePath)
 {
 	ConfigurationNode * current = m_rootNode;
 	string name;
@@ -61,7 +61,7 @@ ConfigurationNode * Configuration::traversePath(const char * nodePath)
 			bool found = false;
 			++nodePath;
 			
-			for(list<ConfigurationNode *>::iterator i = current->data.children.begin(); i != current->data.children.end(); ++i)
+			for(vector<ConfigurationNode *>::iterator i = current->data.children.begin(); i != current->data.children.end(); ++i)
 				if((* i)->nodeName == name)
 				{
 					current = * i;
@@ -87,7 +87,7 @@ ConfigurationNode * Configuration::traversePath(const char * nodePath)
 		bool found = false;
 		++nodePath;
 		
-		for(list<ConfigurationNode *>::iterator i = current->data.children.begin(); i != current->data.children.end(); ++i)
+		for(vector<ConfigurationNode *>::iterator i = current->data.children.begin(); i != current->data.children.end(); ++i)
 			if((* i)->nodeName == name)
 			{
 				current = * i;
@@ -135,7 +135,7 @@ ConfigurationNodeType Configuration::nodeType(const char * nodePath)
 	return node->nodeType;
 }
 
-list<string> Configuration::getStringList(const char * listPath)
+vector<string> Configuration::getStringList(const char * listPath)
 {
 	ConfigurationNode * node = traversePath(listPath);
 	
@@ -148,7 +148,7 @@ list<string> Configuration::getStringList(const char * listPath)
 	return node->data.valueList;
 }
 
-list<string> Configuration::enumerateSubkeys(const char * keyPath)
+vector<string> Configuration::enumerateSubkeys(const char * keyPath)
 {
 	ConfigurationNode * node = traversePath(keyPath);
 	
@@ -158,9 +158,9 @@ list<string> Configuration::enumerateSubkeys(const char * keyPath)
 	if(node->nodeType != CFGNT_SECTION)
 		throw ((const char *) "Node is not of section type!");
 		
-	list<string> resultList;
+	vector<string> resultList;
 	
-	for(list<ConfigurationNode *>::iterator i = node->data.children.begin(); i != node->data.children.end(); ++i)
+	for(vector<ConfigurationNode *>::iterator i = node->data.children.begin(); i != node->data.children.end(); ++i)
 		resultList.push_back((* i)->nodeName);
 		
 	return resultList;

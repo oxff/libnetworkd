@@ -122,9 +122,9 @@ void networkd_cfg_yyerror(const char * errorMessage)
 int networkd_cfg_yylex();
 
 
-ConfigurationNode * g_networkd_cfg_yyrootSection;
-ConfigurationNode * g_networkd_cfg_yycurrentSection;
-ConfigurationNode * g_networkd_cfg_yycurrentValue;
+Configuration::ConfigurationNode * g_networkd_cfg_yyrootSection;
+Configuration::ConfigurationNode * g_networkd_cfg_yycurrentSection;
+Configuration::ConfigurationNode * g_networkd_cfg_yycurrentValue;
 
 
 extern string g_networkd_cfg_yystringBuffer;
@@ -1375,7 +1375,7 @@ yyreduce:
   case 4:
 #line 51 "ConfigParser.y"
     {
-			g_networkd_cfg_yyrootSection = new ConfigurationNode;
+			g_networkd_cfg_yyrootSection = new Configuration::ConfigurationNode;
 			g_networkd_cfg_yycurrentSection = g_networkd_cfg_yyrootSection;
 			
 			g_networkd_cfg_yyrootSection->nodeType = CFGNT_SECTION;
@@ -1395,9 +1395,9 @@ yyreduce:
   case 6:
 #line 67 "ConfigParser.y"
     {
-			ConfigurationNode * backlink = g_networkd_cfg_yycurrentSection;
+			Configuration::ConfigurationNode * backlink = g_networkd_cfg_yycurrentSection;
 			
-			g_networkd_cfg_yycurrentSection = new ConfigurationNode;
+			g_networkd_cfg_yycurrentSection = new Configuration::ConfigurationNode;
 			g_networkd_cfg_yycurrentSection->nodeType = CFGNT_SECTION;
 			g_networkd_cfg_yycurrentSection->nodeName = g_networkd_cfg_yystringBuffer;
 			g_networkd_cfg_yycurrentSection->backlink = backlink;
@@ -1414,7 +1414,7 @@ yyreduce:
   case 11:
 #line 87 "ConfigParser.y"
     {
-			g_networkd_cfg_yycurrentValue = new ConfigurationNode;
+			g_networkd_cfg_yycurrentValue = new Configuration::ConfigurationNode;
 			
 			g_networkd_cfg_yycurrentValue->nodeName = g_networkd_cfg_yystringBuffer;
 			g_networkd_cfg_yycurrentValue->nodeType = CFGNT_VALUE;

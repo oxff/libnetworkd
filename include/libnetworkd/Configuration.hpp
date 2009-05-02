@@ -16,7 +16,7 @@
 #include <stdint.h>
 
 #include <string>
-#include <list>
+#include <vector>
 
 using namespace std;
 
@@ -33,23 +33,6 @@ enum ConfigurationNodeType
 	CFGNT_LIST,
 };
 
-//! Internal use only.
-struct ConfigurationNode
-{
-	ConfigurationNodeType nodeType;
-	
-	struct
-	{
-		list<ConfigurationNode *> children;
-		string value;
-		list<string> valueList;
-	} data;
-	
-	string nodeName;
-	
-	// temporarily used for parsing
-	ConfigurationNode * backlink;
-};
 
 /**
 * Representation of daemon's / module's configuration parsed from a file. In a
@@ -100,7 +83,7 @@ public:
 	* @return A list of string pointers representing the values of the
 	*	list. If the value cannot be found, an empty list is returned.				
 	*/
-	virtual list<string> getStringList(const char * listPath);
+	virtual vector<string> getStringList(const char * listPath);
 	
 	
 	/**
@@ -111,7 +94,7 @@ public:
 	*	valid until the Configuration object is destroyed or a new file
 	*	is parsed.
 	*/
-	virtual list<string> enumerateSubkeys(const char * keyPath);
+	virtual vector<string> enumerateSubkeys(const char * keyPath);
 	
 	/**
 	* Check presence of any subkeys (sections or values).
@@ -127,6 +110,24 @@ public:
 	*	exist.
 	*/
 	virtual ConfigurationNodeType nodeType(const char * nodePath);
+	
+	//! Internal use only.
+	struct ConfigurationNode
+	{
+		ConfigurationNodeType nodeType;
+		
+		struct
+		{
+			vector<ConfigurationNode *> children;
+			string value;
+			vector<string> valueList;
+		} data;
+		
+		string nodeName;
+		
+		// temporarily used for parsing
+		ConfigurationNode * backlink;
+	};
 	
 protected:
 	//! Free node structure and it's children structures.
