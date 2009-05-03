@@ -14,6 +14,7 @@
 #define __INCLUDE_libnetworkd_EventManager_hpp
 
 #include "Event.hpp"
+#include "LogManager.hpp"
 
 
 #include <string>
@@ -73,6 +74,7 @@ struct EventCache
 class EventManager
 {
 public:
+	EventManager() { m_logManager = 0; }
 	virtual ~EventManager() { }
 	
 	/**
@@ -83,6 +85,13 @@ public:
 	 *	every delay seconds.
 	 */
 	virtual void fireEvent(Event * event, uint32_t delay = 0, bool periodic = false);
+
+	/**
+	 * Log all events with LogLevel LL_EVENT to the given manager, deactivate by setting NULL.
+	 * @param[in]	manager		The LogManager to use.
+	 */
+	inline void setLogManager(LogManager * manager)
+	{ m_logManager = manager; }
 	
 	virtual bool subscribeEventMask(string eventMask, EventSubscriber * eventSubscriber, bool subscribeExclusively = false);
 	virtual bool unsubscribeEventMask(string eventMask, EventSubscriber * eventSubscriber);
@@ -100,6 +109,8 @@ private:
 	list<EventSubscription> m_eventSubscriptions;
 	list<EventCache> m_timedEvents;
 	list<EventCache>::iterator m_nextEvent;
+
+	LogManager * m_logManager;
 };
 
 

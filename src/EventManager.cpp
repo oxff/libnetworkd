@@ -46,6 +46,9 @@ void EventManager::fireEvent(Event * event, uint32_t delay, bool periodic)
 			if(nameLikeMask(eventName, i->eventMask))
 				i->subscriber->handleEvent(event);
 		}
+
+		if(m_logManager)
+			m_logManager->logMessage(LogManager::LL_EVENT, event->toString().c_str());
 	}
 	else
 	{
@@ -158,6 +161,7 @@ uint64_t EventManager::nextEventDelta()
 	
 	return (CONTINOUS_TIMEVAL(m_nextEvent->invoked) + m_nextEvent->delay) - CONTINOUS_TIMEVAL(now);
 }
+
 
 
 }
