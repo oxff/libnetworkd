@@ -9,6 +9,8 @@
  *
  */
 
+#include "LogManager.hpp"
+
 #ifndef __INCLUDE_libnetworkd_LogFacility_hpp
 #define __INCLUDE_libnetworkd_LogFacility_hpp
 
@@ -30,10 +32,12 @@ public:
 	/**
 	* This function is called from the LogManager, once a new message
 	* is to be logged.
+	* @param[in]	level		The level, this message is classified
+	* 				as.
 	* @param[in]	renderedMessage	The message, the LogManager rendered 
 	*				and now wants to be logged.
 	*/
-	virtual void logMessage(const char * renderedMessage) = 0;
+	virtual void logMessage(LogManager::LogLevel level, const char * renderedMessage) = 0;
 	
 	/**
 	* The LogManager calls this function to obtain a facility's name when

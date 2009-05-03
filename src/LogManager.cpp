@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#include <libnetworkd/LogFacility.hpp>
 #include <libnetworkd/LogManager.hpp>
 
 
@@ -36,13 +37,13 @@ void LogManager::removeLogFacility(LogFacility * logFacility)
 }
 
 
-void LogManager::logMessage(const char * message)
+void LogManager::logMessage(LogLevel level, const char * message)
 {
 	for(list<LogFacility *>::iterator i = m_logFacilities.begin(); i != m_logFacilities.end(); ++i)
-		(* i)->logMessage(message);
+		(* i)->logMessage(level, message);
 }
 
-void LogManager::logFormatMessage(const char * format, ...)
+void LogManager::logFormatMessage(LogLevel level, const char * format, ...)
 {
 	 char * logMessage;
 	        
@@ -57,7 +58,7 @@ void LogManager::logFormatMessage(const char * format, ...)
 		va_end(vaParameters);
 	}
 	
-	this->logMessage(logMessage);
+	this->logMessage(level, logMessage);
 	free(logMessage);
 }
 
