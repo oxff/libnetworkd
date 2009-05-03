@@ -70,7 +70,6 @@ NetworkSocket * NetworkManager::serverStream(const NetworkNode * localNode, Netw
 	{
 		socket->close(true);
 		
-		delete socket;
 		return 0;
 	}
 	

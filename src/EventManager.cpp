@@ -41,14 +41,14 @@ void EventManager::fireEvent(Event * event, uint32_t delay, bool periodic)
 		ASSERT(!periodic);
 		string eventName = event->getName();
 		
+		if(m_logManager)
+			m_logManager->logMessage(LogManager::LL_EVENT, event->toString().c_str());
+		
 		for(list<EventSubscription>::iterator i = m_eventSubscriptions.begin(); i != m_eventSubscriptions.end(); ++i)
 		{
 			if(nameLikeMask(eventName, i->eventMask))
 				i->subscriber->handleEvent(event);
 		}
-
-		if(m_logManager)
-			m_logManager->logMessage(LogManager::LL_EVENT, event->toString().c_str());
 	}
 	else
 	{
