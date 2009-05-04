@@ -13,7 +13,6 @@
 #ifndef __INCLUDE_libnetworkd_Event_hpp
 #define __INCLUDE_libnetworkd_Event_hpp
 
-#include <map>
 #include <string>
 #include <arpa/inet.h>
 #include <sys/time.h>
@@ -23,6 +22,9 @@
 #include <string.h>
 #include <stdlib.h>
 using namespace std;
+
+#include <tr1/unordered_map>
+using namespace std::tr1;
 
 #include "LogManager.hpp"
 
@@ -241,14 +243,6 @@ private:
 };
 
 
-struct EventAttributeNameComparator
-{
-	bool operator()(string a, string b)
-	{
-		return a < b;
-	}
-};
-
 class Event
 {
 public:
@@ -321,7 +315,7 @@ public:
 		integer = htonl(m_attributes.size());
 		buffer.append((const char *) &integer, sizeof(integer));
 		
-		for(map<string, EventAttribute, EventAttributeNameComparator>::iterator i = m_attributes.begin(); i != m_attributes.end(); ++i)
+		for(AttributeMap::iterator i = m_attributes.begin(); i != m_attributes.end(); ++i)
 		{
 			try
 			{
@@ -395,12 +389,6 @@ public:
 		return m_uid;
 	}
 	
-	inline map<string, EventAttribute, EventAttributeNameComparator>&
-		getAttributes()
-	{
-		return m_attributes;
-	}
-	
 	string toString()
 	{
 		char hexUid[17];
@@ -413,8 +401,8 @@ public:
 		
 		event += string(hexUid) + "] { ";
 		
-		for(map<string, EventAttribute, EventAttributeNameComparator>::iterator
-			i = m_attributes.begin(); i != m_attributes.end(); ++i)
+		for(AttributeMap::iterator i = m_attributes.begin();
+			i != m_attributes.end(); ++i)
 		{
 			event += i->first + " = \"" + i->second.getStringValue() + "\", ";
 		}
@@ -427,11 +415,14 @@ public:
 	
 	
 private:
-	map<string, EventAttribute, EventAttributeNameComparator> m_attributes;
+	typedef unordered_map<string, EventAttribute> AttributeMap;
+	AttributeMap m_attributes;
 	string m_eventName;
+
 #ifndef MAX
 # define MAX(x,y) ((x) < (y) ? (y) : (x))
 #endif
+
 	uint8_t m_uid[ MAX(8, sizeof(struct timeval))  ];
 };
 

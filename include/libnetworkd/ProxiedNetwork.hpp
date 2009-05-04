@@ -16,11 +16,11 @@
 
 
 #include <list>
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 
 
 using namespace std;
-using namespace __gnu_cxx;
+using namespace std::tr1;
 
 
 namespace libnetworkd
@@ -75,7 +75,7 @@ private:
 		list<ProxyAddress>::iterator nextProxy;
 	};
 	
-	typedef hash_map<int, ProxySet, hash<int> > ProxyPool;
+	typedef unordered_map<int, ProxySet> ProxyPool;
 	
 	ProxyPool m_proxyPool;
 	
