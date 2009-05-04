@@ -98,8 +98,6 @@ TcpSocket::~TcpSocket()
 	if(m_socket > 0)
 		close();
 
-	if(!m_serverSocket && m_clientEndpoint && m_serverEndpointFactory)
-		m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
 }
 
 
@@ -215,6 +213,9 @@ bool TcpSocket::close(bool force)
 		else
 			m_clientEndpoint->connectionClosed();
 	}
+	
+	if(!m_serverSocket && m_clientEndpoint && m_serverEndpointFactory)
+		m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
 
 	delete this;
 	return true;
