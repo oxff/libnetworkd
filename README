@@ -4,7 +4,7 @@
 	| | | |_) | | | |  __/ |_ \ V  V / (_) | |  |   < (_| |
 	|_|_|_.__/|_| |_|\___|\__| \_/\_/ \___/|_|  |_|\_\__,_|
                                                           
-		version 1.0.1
+		version 1.1.0
 	
 
 libnetworkd is the skeleton library for a configurable, modular, event driven,
