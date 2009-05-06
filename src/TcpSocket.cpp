@@ -301,6 +301,9 @@ void TcpSocket::pollRead()
 				else
 					m_clientEndpoint->connectionLost();
 
+				if(!m_serverSocket && m_clientEndpoint && m_serverEndpointFactory)
+					m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
+
 				m_ioManager->removeSocket(this);
 				delete this;
 
