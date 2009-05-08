@@ -203,9 +203,6 @@ bool TcpSocket::close(bool force)
 
 	::close(m_socket);
 
-	m_socket = -1;
-	m_state = NETSOCKSTATE_DOWN;
-
 	if(m_clientEndpoint)
 	{
 		if(m_state == NETSOCKSTATE_BUFFERING)
@@ -213,6 +210,9 @@ bool TcpSocket::close(bool force)
 		else
 			m_clientEndpoint->connectionClosed();
 	}
+	
+	m_socket = -1;
+	m_state = NETSOCKSTATE_DOWN;
 	
 	if(!m_serverSocket && m_clientEndpoint && m_serverEndpointFactory)
 		m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
@@ -367,6 +367,9 @@ void TcpSocket::pollWrite()
 			m_ioManager->removeSocket(this);
 			::close(m_socket);
 
+			if(m_serverEndpointFactory)
+				m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
+
 			m_clientEndpoint->connectionClosed();
 			delete this;
 		}
@@ -384,6 +387,9 @@ void TcpSocket::pollError()
 	m_socket = -1;
 
 	m_clientEndpoint->connectionLost();
+				
+	if(!m_serverSocket && m_clientEndpoint && m_serverEndpointFactory)
+		m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
 
 	m_ioManager->removeSocket(this);
 	delete this;
