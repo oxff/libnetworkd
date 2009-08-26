@@ -55,13 +55,15 @@ TcpSocket::TcpSocket(IOManager * ioManager, NetworkEndpointFactory * serverEndpo
 	m_clientEndpoint = 0;
 }
 
-TcpSocket::TcpSocket(IOManager * ioManager, int existingSocket, NetworkEndpointFactory * factory, struct sockaddr_in * remoteAddress)
+TcpSocket::TcpSocket(IOManager * ioManager, int existingSocket,
+		NetworkEndpointFactory * factory, NetworkEndpoint * ep,
+		struct sockaddr_in * remoteAddress)
 {
 	NetworkNode remoteNode, localNode;
 	m_ioManager = ioManager;
 	m_socket = existingSocket;
+	m_clientEndpoint = ep;
 	m_serverEndpointFactory = factory;
-	m_clientEndpoint = factory->createEndpoint(this);
 	m_serverSocket = false;
 
 	{
@@ -278,7 +280,12 @@ void TcpSocket::pollRead()
 
 		if(clientSocket > 0)
 		{
-			new TcpSocket(m_ioManager, clientSocket, m_serverEndpointFactory, &clientAddress);
+			NetworkEndpoint * ep = m_serverEndpointFactory->createEndpoint(this);
+
+			if(!ep)
+				::close(clientSocket);
+			else
+				new TcpSocket(m_ioManager, clientSocket, m_serverEndpointFactory, ep, &clientAddress);
 		}
 	}
 	else
