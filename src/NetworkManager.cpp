@@ -62,7 +62,10 @@ NetworkSocket * NetworkManager::serverStream(const NetworkNode * localNode, Netw
 	if(localNode->name == "any")
 		localAddress.sin_addr.s_addr = INADDR_ANY;
 	else
-		localAddress.sin_addr.s_addr = inet_addr(localNode->name.c_str());
+	{
+		if(inet_aton(localNode->name.c_str(), &localAddress.sin_addr.s_addr == 0))
+			return 0;
+	}
 	
 	socket = new TcpSocket(this, factory);	
 	
