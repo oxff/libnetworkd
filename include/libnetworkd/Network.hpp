@@ -180,7 +180,7 @@ public:
 protected:
 	bool socket();
 	
-	TcpSocket(IOManager * ioManager, int connectedSocket, NetworkEndpointFactory * factory, NetworkEndpoint * endpoint, struct sockaddr_in * remoteAddress);
+	TcpSocket(IOManager * ioManager, int connectedSocket, NetworkEndpointFactory * factory, struct sockaddr_in * remoteAddress);
 	
 
 protected:	
