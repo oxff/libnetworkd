@@ -13,7 +13,6 @@
 #ifndef __INCLUDE_libnetworkd_Event_hpp
 #define __INCLUDE_libnetworkd_Event_hpp
 
-#include <string>
 #include <arpa/inet.h>
 #include <sys/time.h>
 #include <time.h>
@@ -21,6 +20,9 @@
 #include <strings.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include <algorithm>
+#include <string>
 using namespace std;
 
 #include <tr1/unordered_map>
@@ -142,6 +144,22 @@ public:
 			return string(buffer);
 		}
 	}
+
+	string toString()
+	{		
+		if(m_attributeType == EVENT_AT_STRING)
+		{
+			string rendered = m_stringValue;
+
+			if(rendered.size() > 64)
+				rendered.erase(64);
+
+			transform(rendered.begin(), rendered.end(), rendered.begin(), sanitizeNonAscii);
+			return rendered;
+		}
+
+		return getStringValue();
+	}
 	
 	inline string operator*()
 	{
@@ -158,6 +176,14 @@ public:
 	
 protected:
 	friend class Event;
+
+	static char sanitizeNonAscii(char in)
+	{
+		if(!isprint(in) || in == '\n' || in == '\r')
+			return '.';
+
+		return in;
+	}
 	
 	inline string serialize()
 	{
@@ -404,7 +430,7 @@ public:
 		for(AttributeMap::iterator i = m_attributes.begin();
 			i != m_attributes.end(); ++i)
 		{
-			event += i->first + " = \"" + i->second.getStringValue() + "\", ";
+			event += i->first + " = \"" + i->second.toString() + "\", ";
 		}
 		
 		event.erase(event.size() - 2);
