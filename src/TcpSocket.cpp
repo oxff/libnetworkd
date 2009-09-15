@@ -68,6 +68,8 @@ TcpSocket::TcpSocket(IOManager * ioManager, int existingSocket,
 	if(!m_clientEndpoint)
 	{
 		::close(existingSocket);
+		m_socket = -1;
+
 		delete this;
 		return;
 	}
@@ -103,9 +105,8 @@ TcpSocket::TcpSocket(IOManager * ioManager, int existingSocket,
 
 TcpSocket::~TcpSocket()
 {
-	if(m_socket > 0)
+	if(m_socket >= 0)
 		close();
-
 }
 
 
