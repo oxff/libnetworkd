@@ -439,9 +439,12 @@ public:
 		return event;
 	}
 	
+	typedef unordered_map<string, EventAttribute> AttributeMap;
+
+	inline const AttributeMap& getAttributes()
+	{ return m_attributes; }
 	
 private:
-	typedef unordered_map<string, EventAttribute> AttributeMap;
 	AttributeMap m_attributes;
 	string m_eventName;
 
