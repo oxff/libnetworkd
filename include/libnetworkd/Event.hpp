@@ -443,6 +443,9 @@ public:
 
 	inline const AttributeMap& getAttributes()
 	{ return m_attributes; }
+
+	inline bool hasAttribute(const char * name)
+	{ return m_attributes.find(name) != m_attributes.end(); }
 	
 private:
 	AttributeMap m_attributes;
