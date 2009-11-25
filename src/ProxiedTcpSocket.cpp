@@ -175,7 +175,6 @@ void ProxiedTcpSocket::dataRead(const char * buffer, uint32_t dataLength)
 
 				vidR = (struct socks5_vidResponse*)m_buffer;
 				if(vidR->version != 5) {
-					printf("socks5 version error in socks5_vidResponse (%d != canonical 5)\n", vidR->version);
 					close(true);
 					return;
 				}
@@ -296,7 +295,6 @@ void ProxiedTcpSocket::dataRead(const char * buffer, uint32_t dataLength)
 			}
 			break;
 		default:
-			printf("socks5: internal error: bad m_proxyStatus\n");
 			close(true);
 			return;
 	}
