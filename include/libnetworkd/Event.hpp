@@ -111,12 +111,12 @@ public:
 	}
 	
 	
-	EventAttributeType getType()
+	EventAttributeType getType() const
 	{
 		return m_attributeType;
 	}
 	
-	uint32_t getIntegerValue()
+	uint32_t getIntegerValue() const
 	{
 		if(m_attributeType == EVENT_AT_INTEGER)
 			return m_integerValue;
@@ -124,7 +124,7 @@ public:
 			return 0;
 	}
 	
-	string getStringValue()
+	const string getStringValue() const
 	{
 		if(m_attributeType == EVENT_AT_STRING)
 			return m_stringValue;
@@ -145,7 +145,7 @@ public:
 		}
 	}
 
-	string toString()
+	string toString() const
 	{		
 		if(m_attributeType == EVENT_AT_STRING)
 		{
@@ -161,12 +161,12 @@ public:
 		return getStringValue();
 	}
 	
-	inline string operator*()
+	inline const string operator*() const
 	{
 		return getStringValue();
 	}
 	
-	void * getPointerValue()
+	void * getPointerValue() const
 	{
 		if(m_attributeType == EVENT_AT_POINTER)
 			return m_pointerValue;
@@ -439,9 +439,15 @@ public:
 		return event;
 	}
 	
+	typedef unordered_map<string, EventAttribute> AttributeMap;
+
+	inline const AttributeMap& getAttributes()
+	{ return m_attributes; }
+
+	inline bool hasAttribute(const char * name)
+	{ return m_attributes.find(name) != m_attributes.end(); }
 	
 private:
-	typedef unordered_map<string, EventAttribute> AttributeMap;
 	AttributeMap m_attributes;
 	string m_eventName;
 
