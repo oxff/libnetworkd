@@ -277,23 +277,13 @@ public:
 		bzero(m_uid, sizeof(m_uid));
 	}
 	
-	inline Event(const char * eventName)
-	{
-		bzero(m_uid, sizeof(m_uid));
-		m_eventName = string(eventName);
-		
-		gettimeofday((struct timeval *) m_uid, 0);
-		// unfortunately the faster m_uid[0] only works on big endian systems
-		((struct timeval *) m_uid)->tv_sec = (((struct timeval *) m_uid)->tv_sec & 0x00ffffff) | ((rand() & 0xff) << 24);
-	}
-	
 	inline Event(string eventName)
 	{
 		bzero(m_uid, sizeof(m_uid));
 		m_eventName = eventName;
 		
-		gettimeofday((struct timeval *) m_uid, 0);
-		((struct timeval *) m_uid)->tv_sec = (((struct timeval *) m_uid)->tv_sec & 0x00ffffff) | ((rand() & 0xff) << 24);
+		gettimeofday((struct timeval *) &m_uid[1], 0);
+		m_uid[0] = ++ m_incrementing; 
 	}
 	
 	
@@ -455,7 +445,9 @@ private:
 # define MAX(x,y) ((x) < (y) ? (y) : (x))
 #endif
 
-	uint8_t m_uid[ MAX(8, sizeof(struct timeval))  ];
+	uint8_t m_uid[sizeof(struct timeval) + 1];
+
+	static uint8_t m_incrementing;
 };
 
 
