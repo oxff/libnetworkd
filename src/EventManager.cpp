@@ -162,4 +162,7 @@ uint64_t EventManager::nextEventDelta()
 
 
 
+uint8_t Event::m_incrementing;
+
+
 }
