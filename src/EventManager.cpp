@@ -26,7 +26,7 @@ bool EventManager::nameLikeMask(string name, string mask)
 	
 	for(; a != name.end() && b != mask.end() && * a == * b; ++a, ++b);
 
-	if(a == name.end() || * b == '*')
+	if((a == name.end() && b == mask.end()) || * b == '*')
 		return true;
 		
 	return false;
