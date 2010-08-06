@@ -81,13 +81,7 @@ NetworkSocket * NetworkManager::serverStream(const NetworkNode * localNode, Netw
 
 bool NetworkManager::closeStream(NetworkSocket * tcpSocket, bool force)
 {
-	if(tcpSocket->close(force))
-	{
-		delete (TcpSocket *) tcpSocket;
-		return true;
-	}
-	
-	return false;
+	return tcpSocket->close(force);
 }
 
 
