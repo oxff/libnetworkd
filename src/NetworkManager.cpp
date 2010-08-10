@@ -43,8 +43,6 @@ NetworkSocket * NetworkManager::connectStream(const NetworkNode * remoteNode, Ne
 	if(!socket->connect(&address))
 	{
 		socket->close(true);
-		
-		delete socket;
 		return 0;
 	}
 	
