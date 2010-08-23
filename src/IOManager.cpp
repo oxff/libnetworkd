@@ -12,6 +12,8 @@
 #include <libnetworkd/IO.hpp>
 #include <libnetworkd/LogManager.hpp>
 
+#include <algorithm>
+
 #include <stdlib.h>
 #include <sys/poll.h>
 
@@ -20,14 +22,8 @@ namespace libnetworkd
 {
 
 
-IOManager::IOManager()
-{
-			m_removalCount = 0;
-}
-
 IOManager::~IOManager()
 {
-	// TODO: implement
 }
 
 
@@ -40,7 +36,6 @@ bool IOManager::addSocket(IOSocket * socket, int fileDescriptor)
 		
 		info.socket = socket;
 		info.fileDescriptor = fileDescriptor;
-		info.markedForRemoval = false;
 		
 		m_socketList.push_back(info);
 	}
@@ -50,59 +45,33 @@ bool IOManager::addSocket(IOSocket * socket, int fileDescriptor)
 
 bool IOManager::removeSocket(IOSocket * socket)
 {
-	list<IOSocketRelated>::iterator i = m_socketList.begin();
-	
-	for(; i != m_socketList.end(); ++i)
-		if(i->socket == socket)
-			break;
-	
-	if(i == m_socketList.end() || i->markedForRemoval)
+	list<IOSocketRelated>::iterator it = m_socketList.begin();
+	for(; it != m_socketList.end() && it->socket != socket; ++it);
+
+	if(it == m_socketList.end())
 		return false;
 
-	i->markedForRemoval = true;
-	++m_removalCount;
-		
+	if(it == m_iterator)
+		++m_iterator;
+
+	m_socketList.erase(it);
 	return true;
 }
 
 
 void IOManager::setFileDescriptor(IOSocket * socket, int fd)
 {
-	list<IOSocketRelated>::iterator i = m_socketList.begin();
-	
-	for(; i != m_socketList.end(); ++i)
-		if(i->socket == socket)
-			break;
-	
-	if(i == m_socketList.end())
+	list<IOSocketRelated>::iterator it = m_socketList.begin();
+	for(; it != m_socketList.end() && it->socket != socket; ++it);
+
+	if(it == m_socketList.end())
 		return;
 		
-	i->fileDescriptor = fd;
+	it->fileDescriptor = fd;
 }
-
-
-void IOManager::removeMarked()
-{
-	list<IOSocketRelated>::iterator next;
-	
-	for(list<IOSocketRelated>::iterator i = m_socketList.begin(); m_removalCount && i != m_socketList.end(); i = next)
-	{
-		next = i;
-		++next;
-		
-		if(i->markedForRemoval)
-		{
-			m_socketList.erase(i);
-			--m_removalCount;
-		}
-	}
-}
-
 
 void IOManager::waitForEventsAndProcess(uint32_t maxwait)
 {
-	removeMarked();
-	
 	struct pollfd * pollfds = (struct pollfd *) malloc(m_socketList.size() * sizeof(struct pollfd));
 	list<IOSocketRelated>::iterator i;
 	int pollResult;
@@ -144,33 +113,31 @@ void IOManager::waitForEventsAndProcess(uint32_t maxwait)
 	{
 		j = 0;
 			
-		for(i = m_socketList.begin(); j < c; ++i, ++j)
+		for(m_iterator = m_socketList.begin(); m_iterator != m_socketList.end() && j < c; ++j)
 		{
-			ASSERT(i != m_socketList.end());
-			
-			if(i->markedForRemoval || i->socket->m_ioSocketState == IOSOCKSTAT_IGNORE)
+			if(m_iterator->fileDescriptor != pollfds[j].fd || i->socket->m_ioSocketState == IOSOCKSTAT_IGNORE)
 				continue;
 			
 			if(pollfds[j].revents & POLLERR)
-				i->socket->pollError();
+				m_iterator->socket->pollError();
 				
-			if(i->markedForRemoval)
+			if(m_iterator->fileDescriptor != pollfds[j].fd)
 				continue;
 				
 			if(pollfds[j].revents & POLLOUT)
-				i->socket->pollWrite();
+				m_iterator->socket->pollWrite();
 			
-			if(i->markedForRemoval)
+			if(m_iterator->fileDescriptor != pollfds[j].fd)
 				continue;
 				
 			if(pollfds[j].revents & POLLIN)
-				i->socket->pollRead();
+				m_iterator->socket->pollRead();
+
+			++m_iterator;
 		}
 	}
 	
 	free(pollfds);
-	
-	removeMarked();
 }
 
 

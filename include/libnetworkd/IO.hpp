@@ -103,7 +103,6 @@ struct IOSocketRelated
 {
 	IOSocket * socket;
 	int fileDescriptor;
-	bool markedForRemoval;
 };
 
 
@@ -119,7 +118,10 @@ struct IOSocketRelated
 class IOManager
 {
 public:
-	IOManager();
+	IOManager()
+		: m_iterator(m_socketList.end())
+	{ }
+	
 	virtual ~IOManager();
 	
 	/**
@@ -168,13 +170,8 @@ public:
 	virtual void setFileDescriptor(IOSocket * socket, int fileDescriptor);
 	
 protected:
-	//! remove all sockets in m_removalList from m_socketMap and clear the
-	//! m_removalList.
-	void removeMarked();
-	
-private:
 	list<IOSocketRelated> m_socketList;
-	uint32_t m_removalCount;
+	list<IOSocketRelated>::iterator m_iterator;
 };
 
 
