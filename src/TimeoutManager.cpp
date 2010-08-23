@@ -55,9 +55,18 @@ void TimeoutManager::dropTimeout(Timeout timeout)
 	{
 		if(* it == (TimeoutInfo *) timeout)
 		{
-			if(it != m_lockedTimeout)
-			{
+			if(m_iterator == m_timeouts.end())
+			{ // Not iterating, just remove it.
 				m_timeouts.erase(it);
+				delete (TimeoutInfo *) timeout;
+			}
+			else if((* m_iterator)->firets < ((TimeoutInfo *) timeout)->firets)
+			{ // Iterating and would not get removed automatically because it is passed just now.
+				TimeoutInfo * current = * m_iterator;
+
+				m_timeouts.erase(it);
+				m_iterator = m_timeouts.find(current);
+
 				delete (TimeoutInfo *) timeout;
 			}
 			
@@ -71,22 +80,33 @@ void TimeoutManager::dropTimeout(Timeout timeout)
 void TimeoutManager::dropReceiver(TimeoutReceiver * receiver)
 {
 	std::multiset<TimeoutInfo *>::iterator next;
+	TimeoutInfo * current = 0;
 	
 	for(std::multiset<TimeoutInfo *>::iterator it = m_timeouts.begin();
 		it != m_timeouts.end(); it = next)
 	{
 		next = it;
 		++next;
-
-		if(it == m_lockedTimeout)
-			continue;
 		
 		if((* it)->receiver == receiver)
 		{
-			delete (TimeoutInfo *) (* it);
-			m_timeouts.erase(it);
+			if(m_iterator == m_timeouts.end())
+			{ // Not iterating, just remove it.
+				delete (TimeoutInfo *) (* it);
+				m_timeouts.erase(it);
+			}
+			else if((* m_iterator)->firets < (* it)->firets)
+			{ // In the future, we need to proactively remove it.
+				current = * m_iterator;
+
+				delete (TimeoutInfo *) (* it);
+				m_timeouts.erase(it);
+			}
 		}
 	}
+
+	if(current)
+		m_iterator = m_timeouts.find(current);
 }
 
 
@@ -95,31 +115,16 @@ void TimeoutManager::fireTimeouts()
 	unsigned int now = time(0);	
 	std::multiset<TimeoutInfo *>::iterator next;
 	
-	for(std::multiset<TimeoutInfo *>::iterator it = m_timeouts.begin();
-		it != m_timeouts.end(); it = next)
+	for(m_iterator = m_timeouts.begin(); (* m_iterator)->firets <= now && m_iterator != m_timeouts.end(); ++m_iterator)
 	{
-		m_lockedTimeout = it;
-		next = it;		
-		
-		if((* it)->firets <= now)
-		{
-			TimeoutInfo * p = * it;
-		
-			p->receiver->timeoutFired((Timeout) * it);		
-
-			++next;			
-			m_timeouts.erase(it);
-
-			delete p;
-		}
-		else
-		{
-			m_lockedTimeout = m_timeouts.end();
-			return;
-		}
+		TimeoutInfo * p = * m_iterator;
+	
+		p->receiver->timeoutFired((Timeout) * m_iterator);
+		delete p;
 	}
 
-	m_lockedTimeout = m_timeouts.end();
+	m_timeouts.erase(m_timeouts.begin(), m_iterator);
+	m_iterator = m_timeouts.end();
 }
 
 

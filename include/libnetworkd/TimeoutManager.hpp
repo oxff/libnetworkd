@@ -50,6 +50,10 @@ public:
 class TimeoutManager
 {
 public:
+	TimeoutManager()
+		: m_iterator(m_timeouts.end())
+	{ }
+
 	//! Destruct the manager and free all allocated timeouts.
 	~TimeoutManager();
 	
@@ -104,7 +108,7 @@ private:
 	};
 	
 	std::multiset<TimeoutInfo *, TimeoutInfoEq> m_timeouts;
-	std::multiset<TimeoutInfo *>::iterator m_lockedTimeout;
+	std::multiset<TimeoutInfo *>::iterator m_iterator;
 };
 
 
