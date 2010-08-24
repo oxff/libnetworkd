@@ -14,6 +14,9 @@
 #include <libnetworkd/TimeoutManager.hpp>
 
 
+#include <stdio.h>
+
+
 namespace libnetworkd
 {
 
@@ -115,7 +118,7 @@ void TimeoutManager::fireTimeouts()
 	unsigned int now = time(0);	
 	std::multiset<TimeoutInfo *>::iterator next;
 	
-	for(m_iterator = m_timeouts.begin(); (* m_iterator)->firets <= now && m_iterator != m_timeouts.end(); ++m_iterator)
+	for(m_iterator = m_timeouts.begin(); m_iterator != m_timeouts.end() && (* m_iterator)->firets <= now; ++m_iterator)
 	{
 		TimeoutInfo * p = * m_iterator;
 	
