@@ -96,7 +96,7 @@ bool ModuleManager::unloadModule(ModuleEncapsulation * module, bool force)
 		
 	delete module->configuration;
 	delete module->moduleInterface;
-	dlclose(module->library);
+//	dlclose(module->library);
 	
 	return true;
 }
