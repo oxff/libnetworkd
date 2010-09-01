@@ -151,11 +151,36 @@ bool TcpSocket::connect(struct sockaddr_in * remoteHost)
 
 	if(::connect(m_socket, (struct sockaddr *) remoteHost, sizeof(struct sockaddr)) == 0)
 	{
+		NetworkNode localNode, remoteNode;
+
+		{
+			struct sockaddr_in localAddress, remoteAddress;
+			socklen_t len = sizeof(localAddress);
+
+			if(getsockname(m_socket, (struct sockaddr *) &localAddress, &len) < 0)
+				localNode.port = 0;
+			else
+			{
+				localNode.name = inet_ntoa(localAddress.sin_addr);
+				localNode.port = ntohs(localAddress.sin_port);
+			}
+
+			len = sizeof(remoteAddress);
+			
+			if(getpeername(m_socket, (struct sockaddr *) &remoteAddress, &len) < 0)
+				remoteNode.port = 0;
+			else
+			{
+				remoteNode.name = inet_ntoa(remoteAddress.sin_addr);
+				remoteNode.port = ntohs(remoteAddress.sin_port);
+			}
+		}
+
 		m_ioManager->addSocket(this, m_socket);
 		m_ioSocketState = IOSOCKSTAT_IDLE;
 
 		m_state = NETSOCKSTATE_IDLE;
-		m_clientEndpoint->connectionEstablished(0, 0); // TODO give remote & local info
+		m_clientEndpoint->connectionEstablished(&remoteNode, &localNode); // TODO give remote & local info
 
 		return true;
 	}
@@ -328,6 +353,31 @@ void TcpSocket::pollWrite()
 
 	if(m_state == NETSOCKSTATE_GOING_UP)
 	{
+		NetworkNode localNode, remoteNode;
+
+		{
+			struct sockaddr_in localAddress, remoteAddress;
+			socklen_t len = sizeof(localAddress);
+
+			if(getsockname(m_socket, (struct sockaddr *) &localAddress, &len) < 0)
+				localNode.port = 0;
+			else
+			{
+				localNode.name = inet_ntoa(localAddress.sin_addr);
+				localNode.port = ntohs(localAddress.sin_port);
+			}
+
+			len = sizeof(remoteAddress);
+			
+			if(getpeername(m_socket, (struct sockaddr *) &remoteAddress, &len) < 0)
+				remoteNode.port = 0;
+			else
+			{
+				remoteNode.name = inet_ntoa(remoteAddress.sin_addr);
+				remoteNode.port = ntohs(remoteAddress.sin_port);
+			}
+		}
+
 		if(!m_outputBuffer.empty())
 		{
 			m_state = NETSOCKSTATE_BUFFERING;
@@ -340,7 +390,7 @@ void TcpSocket::pollWrite()
 		}
 
 		// TODO provide local and remote node information
-		m_clientEndpoint->connectionEstablished(0, 0);
+		m_clientEndpoint->connectionEstablished(&remoteNode, &localNode);
 		return;
 	}
 
