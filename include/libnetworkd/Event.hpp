@@ -277,15 +277,18 @@ public:
 		bzero(m_uid, sizeof(m_uid));
 	}
 	
-	inline Event(string eventName)
+	inline Event(string eventName, const uint8_t * parent = 0)
 	{
-		bzero(m_uid, sizeof(m_uid));
 		m_eventName = eventName;
 		
 		gettimeofday((struct timeval *) &m_uid[1], 0);
-		m_uid[0] = ++ m_incrementing; 
+		m_uid[0] = ++ m_incrementing;
+
+		if(!parent)
+			bzero(m_parent, sizeof(m_parent));
+		else
+			memcpy(m_parent, parent, sizeof(m_parent));
 	}
-	
 	
 	inline EventAttribute& operator[](const char * attributeName)
 	{
@@ -404,16 +407,28 @@ public:
 	{
 		return m_uid;
 	}
+
+	inline const uint8_t * getParent()
+	{
+		return m_parent;
+	}
 	
 	string toString()
 	{
-		char hexUid[17];
+		char hexUid[sizeof(m_uid) * 2 + 1];
 		string event = "[\"" + m_eventName + "\":";
 		
 		for(unsigned int i = 0; i < sizeof(m_uid); ++i)
 			sprintf(&hexUid[i * 2], "%02x", m_uid[i]);
 		
-		hexUid[16] = 0;
+		hexUid[sizeof(hexUid) - 1] = 0;
+		
+		event += string(hexUid) + ":";
+		
+		for(unsigned int i = 0; i < sizeof(m_parent); ++i)
+			sprintf(&hexUid[i * 2], "%02x", m_parent[i]);
+		
+		hexUid[sizeof(hexUid) - 1] = 0;
 		
 		event += string(hexUid) + "] { ";
 		
@@ -441,13 +456,13 @@ private:
 	AttributeMap m_attributes;
 	string m_eventName;
 
-#ifndef MAX
-# define MAX(x,y) ((x) < (y) ? (y) : (x))
-#endif
-
 	uint8_t m_uid[sizeof(struct timeval) + 1];
+	uint8_t m_parent[sizeof(struct timeval) + 1];
 
 	static uint8_t m_incrementing;
+
+public:
+	static const size_t UID_SIZE = sizeof(m_uid);
 };
 
 
