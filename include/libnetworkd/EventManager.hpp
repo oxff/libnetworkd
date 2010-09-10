@@ -19,8 +19,11 @@
 
 #include <string>
 #include <list>
+#include <tr1/unordered_map>
 #include <sys/time.h>
 #include <time.h>
+
+using namespace std::tr1;
 
 
 namespace libnetworkd
@@ -82,14 +85,36 @@ public:
 	
 	virtual bool subscribeEventMask(string eventMask, EventSubscriber * eventSubscriber, bool subscribeExclusively = false);
 	virtual bool unsubscribeEventMask(string eventMask, EventSubscriber * eventSubscriber);
+
+	/**
+	 * Unsubcsribe from all mask subscriptions, does not unsubscribe from parent subscriptions!
+	 */
 	virtual bool unsubscribeAll(EventSubscriber * eventSubscriber);
+
+	virtual bool subscribeParent(const uint8_t * parentUid, EventSubscriber * subscriber);
+	virtual bool unsubscribeParent(const uint8_t * parentUid, EventSubscriber * subscriber);
+
 	
 	
 protected:
 	inline bool nameLikeMask(string name, string mask);
 	
 private:
+	struct uint8Hash
+	{
+		inline size_t operator()(basic_string<uint8_t> str) const
+		{
+			size_t hash = 0;
+
+			for(basic_string<uint8_t>::iterator it = str.begin(); it != str.end(); ++it)
+				hash = ((hash >> 8) | (hash << (sizeof(hash) - 8))) ^ * it;
+
+			return hash;
+		}
+	};
+
 	list<EventSubscription> m_eventSubscriptions;
+	unordered_map<basic_string<uint8_t>, EventSubscriber *, uint8Hash >  m_parentSubscriptions;
 
 	LogManager * m_logManager;
 };
