@@ -53,16 +53,6 @@ struct EventSubscription
 	bool exclusive;
 };
 
-//! Used internally by the EventManager to track (periodic) delayed events.
-struct EventCache
-{
-	Event event;
-	struct timeval invoked;
-	uint32_t delay;
-	bool periodic;
-};
-
-
 /**
  * Manager for abstract Event objects. Allows direct fireing of events or
  * after a specified delay. If delayed, events can also be fired periodically,
@@ -80,11 +70,8 @@ public:
 	/**
 	 * Fire the given event.
 	 * @param[in]	event		Abstract Event representation.
-	 * @param[in]	delay		Optional delay in miliseconds to fire.
-	 * @param[in]	periodic	If enabled, the Event will periodically be fired
-	 *	every delay seconds.
 	 */
-	virtual void fireEvent(Event * event, uint32_t delay = 0, bool periodic = false);
+	virtual void fireEvent(Event * event);
 
 	/**
 	 * Log all events with LogLevel LL_EVENT to the given manager, deactivate by setting NULL.
@@ -97,18 +84,12 @@ public:
 	virtual bool unsubscribeEventMask(string eventMask, EventSubscriber * eventSubscriber);
 	virtual bool unsubscribeAll(EventSubscriber * eventSubscriber);
 	
-	inline uint64_t nextEventDelta();	
-	inline void loopTimedEvents();
-	inline bool hasTimedEvents()
-	{ return m_nextEvent != m_timedEvents.end(); }
 	
 protected:
 	inline bool nameLikeMask(string name, string mask);
 	
 private:
 	list<EventSubscription> m_eventSubscriptions;
-	list<EventCache> m_timedEvents;
-	list<EventCache>::iterator m_nextEvent;
 
 	LogManager * m_logManager;
 };

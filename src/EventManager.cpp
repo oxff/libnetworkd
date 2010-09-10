@@ -32,40 +32,17 @@ bool EventManager::nameLikeMask(string name, string mask)
 	return false;
 }
 
-void EventManager::fireEvent(Event * event, uint32_t delay, bool periodic)
+void EventManager::fireEvent(Event * event)
 {
-	if(!delay)
+	string eventName = event->getName();
+	
+	if(m_logManager)
+		m_logManager->logMessage(LogManager::LL_EVENT, event->toString().c_str());
+	
+	for(list<EventSubscription>::iterator i = m_eventSubscriptions.begin(); i != m_eventSubscriptions.end(); ++i)
 	{
-		ASSERT(!periodic);
-		string eventName = event->getName();
-		
-		if(m_logManager)
-			m_logManager->logMessage(LogManager::LL_EVENT, event->toString().c_str());
-		
-		for(list<EventSubscription>::iterator i = m_eventSubscriptions.begin(); i != m_eventSubscriptions.end(); ++i)
-		{
-			if(nameLikeMask(eventName, i->eventMask))
-				i->subscriber->handleEvent(event);
-		}
-	}
-	else
-	{
-		EventCache cache;
-				
-		cache.event = * event;		
-		gettimeofday(&cache.invoked, 0);
-		cache.delay = delay;
-		cache.periodic = periodic;
-		
-		m_timedEvents.push_back(cache);
-		
-		if(m_nextEvent == m_timedEvents.end())
-			--m_nextEvent;
-		else if(CONTINOUS_TIMEVAL(m_nextEvent->invoked) + m_nextEvent->delay < CONTINOUS_TIMEVAL(cache.invoked) + cache.delay)
-		{
-			m_nextEvent = m_timedEvents.end();
-			--m_nextEvent;
-		}
+		if(nameLikeMask(eventName, i->eventMask))
+			i->subscriber->handleEvent(event);
 	}
 }
 
@@ -126,40 +103,6 @@ bool EventManager::unsubscribeAll(EventSubscriber * eventSubscriber)
 	
 	return foundOne;
 }
-
-void EventManager::loopTimedEvents()
-{
-	struct timeval now;
-	
-	gettimeofday(&now, 0);
-	
-	while(m_nextEvent != m_timedEvents.end() && CONTINOUS_TIMEVAL(now) >= CONTINOUS_TIMEVAL(m_nextEvent->invoked) + m_nextEvent->delay)
-	{
-		fireEvent(&m_nextEvent->event);
-		
-		if(!m_nextEvent->periodic)
-			m_timedEvents.erase(m_nextEvent);
-			
-		m_nextEvent = m_timedEvents.begin();
-		
-		for(std::list<EventCache>::iterator i = m_nextEvent; i != m_timedEvents.end(); ++i)
-			if(CONTINOUS_TIMEVAL(i->invoked) + i->delay > CONTINOUS_TIMEVAL(m_nextEvent->invoked) + m_nextEvent->delay)
-				m_nextEvent = i;
-	}
-}
-
-uint64_t EventManager::nextEventDelta()
-{
-	struct timeval now;
-	
-	if(m_nextEvent == m_timedEvents.end())
-		return 0;
-	
-	gettimeofday(&now, 0);
-	
-	return (CONTINOUS_TIMEVAL(m_nextEvent->invoked) + m_nextEvent->delay) - CONTINOUS_TIMEVAL(now);
-}
-
 
 
 uint8_t Event::m_incrementing;
