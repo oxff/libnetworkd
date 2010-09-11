@@ -29,7 +29,6 @@ ModuleManager::ModuleManager()
 
 ModuleManager::~ModuleManager()
 {
-	unloadAll();
 }
 
 
