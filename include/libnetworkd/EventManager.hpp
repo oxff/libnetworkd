@@ -104,12 +104,7 @@ private:
 	{
 		inline size_t operator()(basic_string<uint8_t> str) const
 		{
-			size_t hash = 0;
-
-			for(basic_string<uint8_t>::iterator it = str.begin(); it != str.end(); ++it)
-				hash = ((hash >> 8) | (hash << (sizeof(hash) - 8))) ^ * it;
-
-			return hash;
+			return _Fnv_hash<sizeof(size_t)>::hash((const char *) str.data(), str.size());
 		}
 	};
 
