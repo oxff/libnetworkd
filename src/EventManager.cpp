@@ -46,7 +46,7 @@ void EventManager::fireEvent(Event * event)
 	}
 	
 	basic_string<uint8_t> uid = basic_string<uint8_t>(event->getParent(), Event::UID_SIZE);
-	unordered_map<basic_string<uint8_t>, EventSubscriber *>::iterator it = m_parentSubscriptions.find(uid);
+	unordered_map<basic_string<uint8_t>, EventSubscriber *, uint8Hash>::iterator it = m_parentSubscriptions.find(uid);
 
 	if(it != m_parentSubscriptions.end())
 		it->second->handleEvent(event);
@@ -97,14 +97,14 @@ bool EventManager::subscribeParent(const uint8_t * parentUid, EventSubscriber * 
 	if(m_parentSubscriptions.find(uid) != m_parentSubscriptions.end())
 		return false;
 
-	m_parentSubscriptions.insert(unordered_map<basic_string<uint8_t>, EventSubscriber *>::value_type(uid, subscriber));
+	m_parentSubscriptions.insert(unordered_map<basic_string<uint8_t>, EventSubscriber *, uint8Hash>::value_type(uid, subscriber));
 	return true;
 }
 
 bool EventManager::unsubscribeParent(const uint8_t * parentUid, EventSubscriber * subscriber)
 {
 	basic_string<uint8_t> uid = basic_string<uint8_t>(parentUid, Event::UID_SIZE);
-	unordered_map<basic_string<uint8_t>, EventSubscriber *>::iterator it = m_parentSubscriptions.find(uid);
+	unordered_map<basic_string<uint8_t>, EventSubscriber *, uint8Hash>::iterator it = m_parentSubscriptions.find(uid);
 
 	if(it == m_parentSubscriptions.end())
 		return false;
