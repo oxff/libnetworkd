@@ -17,6 +17,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <libnetworkd/Network.hpp>
 #include <libnetworkd/LogManager.hpp>

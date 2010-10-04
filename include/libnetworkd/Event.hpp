@@ -462,7 +462,7 @@ private:
 	static uint8_t m_incrementing;
 
 public:
-	static const size_t UID_SIZE = sizeof(m_uid);
+	static const size_t UID_SIZE = sizeof(struct timeval) + 1;
 };
 
 
