@@ -63,7 +63,7 @@ void TimeoutManager::dropTimeout(Timeout timeout)
 				m_timeouts.erase(it);
 				delete (TimeoutInfo *) timeout;
 			}
-			else if((* m_iterator)->firets < ((TimeoutInfo *) timeout)->firets)
+			else if((* m_iterator)->firets <= ((TimeoutInfo *) timeout)->firets)
 			{ // Iterating and would not get removed automatically because it is passed just now.
 				TimeoutInfo * current = * m_iterator;
 
@@ -98,7 +98,7 @@ void TimeoutManager::dropReceiver(TimeoutReceiver * receiver)
 				delete (TimeoutInfo *) (* it);
 				m_timeouts.erase(it);
 			}
-			else if((* m_iterator)->firets < (* it)->firets)
+			else if((* m_iterator)->firets <= (* it)->firets)
 			{ // In the future, we need to proactively remove it.
 				current = * m_iterator;
 
