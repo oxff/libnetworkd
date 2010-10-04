@@ -27,7 +27,8 @@ NetworkManager::~NetworkManager()
 {
 }
 
-NetworkSocket * NetworkManager::connectStream(const NetworkNode * remoteNode, NetworkEndpoint * localEndpoint)
+NetworkSocket * NetworkManager::connectStream(const NetworkNode * remoteNode, NetworkEndpoint * localEndpoint,
+	const NetworkNode * localNode)
 {
 	struct sockaddr_in address;
 	TcpSocket * socket;
@@ -38,7 +39,35 @@ NetworkSocket * NetworkManager::connectStream(const NetworkNode * remoteNode, Ne
 	if(inet_aton(remoteNode->name.c_str(), &address.sin_addr) == 0)
 		return 0;
 	
-	socket = new TcpSocket(this, localEndpoint);	
+	socket = new TcpSocket(this, localEndpoint);
+
+	if(localNode)
+	{
+		struct sockaddr_in laddress;
+	
+		laddress.sin_family = AF_INET;
+		laddress.sin_port = htons(localNode->port);
+	
+		if(localNode->name == "any")
+			laddress.sin_addr.s_addr = INADDR_ANY;
+		else
+		{
+			if(inet_aton(localNode->name.c_str(), &laddress.sin_addr) == 0)
+			{
+				socket->close(true);
+				return 0;
+			}
+		}
+
+		if(!socket->bind(&laddress))
+		{
+			socket->close(true);
+			return 0;
+		}
+	}
+	
+	if(inet_aton(remoteNode->name.c_str(), &address.sin_addr) == 0)
+		return 0;
 	
 	if(!socket->connect(&address))
 	{

@@ -136,7 +136,8 @@ class NetworkManager : public IOManager
 public:	
 	virtual ~NetworkManager();
 	
-	virtual NetworkSocket * connectStream(const NetworkNode * remoteNode, NetworkEndpoint * localEndpoint);
+	virtual NetworkSocket * connectStream(const NetworkNode * remoteNode, NetworkEndpoint * localEndpoint,
+		const NetworkNode * localNode = 0);
 	virtual NetworkSocket * serverStream(const NetworkNode * localNode, NetworkEndpointFactory * endpointFactory, uint8_t serverBacklogSize);
 	virtual bool closeStream(NetworkSocket * socket, bool force = false);
 	
