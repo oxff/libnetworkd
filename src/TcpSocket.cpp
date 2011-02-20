@@ -224,7 +224,10 @@ bool TcpSocket::listen(uint8_t backlog)
 bool TcpSocket::close(bool force)
 {
 	if(m_socket == -1)
+	{
+		delete this;
 		return true;
+	}
 
 	if(m_state == NETSOCKSTATE_BUFFERING && !force)
 	{
@@ -407,6 +410,9 @@ void TcpSocket::pollWrite()
 		m_socket = -1;
 
 		m_clientEndpoint->connectionLost();
+		
+		if(!m_serverSocket && m_serverEndpointFactory)
+			m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
 
 		m_ioManager->removeSocket(this);
 		delete this;
@@ -424,7 +430,7 @@ void TcpSocket::pollWrite()
 			m_ioManager->removeSocket(this);
 			::close(m_socket);
 
-			if(m_serverEndpointFactory)
+			if(!m_serverSocket && m_serverEndpointFactory)
 				m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
 
 			m_clientEndpoint->connectionClosed();
@@ -445,7 +451,7 @@ void TcpSocket::pollError()
 
 	m_clientEndpoint->connectionLost();
 				
-	if(!m_serverSocket && m_clientEndpoint && m_serverEndpointFactory)
+	if(!m_serverSocket && m_serverEndpointFactory)
 		m_serverEndpointFactory->destroyEndpoint(m_clientEndpoint);
 
 	m_ioManager->removeSocket(this);
