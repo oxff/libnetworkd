@@ -104,7 +104,11 @@ private:
 	{
 		inline size_t operator()(basic_string<uint8_t> str) const
 		{
-			return _Fnv_hash<sizeof(size_t)>::hash((const char *) str.data(), str.size());
+			#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 5) || __GNUC__ > 4
+				return _Fnv_hash::hash((const char *) str.data(), str.size());
+			#else
+				return _Fnv_hash<sizeof(size_t)>::hash((const char *) str.data(), str.size());
+			#endif
 		}
 	};
 

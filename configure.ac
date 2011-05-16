@@ -1,9 +1,9 @@
 # libnetworkd autoconf input
 # $Id: configure.ac 42 2008-04-01 14:11:08Z oxff $
-# (c) 2007 by Georg 'oxff' Wicherski, <georg-wicherski@pixel-house.net>
+# (c) 2007 by Georg 'oxff' Wicherski, <gw@mwcollect.org>
 
 AC_PREREQ(2.59)
-AC_INIT([libnetworkd], [1.1.0], [georg-wicherski@pixel-house.net])
+AC_INIT([libnetworkd], [1.1.0], [gw@mwcollect.org])
 AM_INIT_AUTOMAKE([libnetworkd], [1.1.0])
 
 AC_REVISION([$Id: configure.ac 42 2008-04-01 14:11:08Z oxff $])
